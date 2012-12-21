@@ -4,6 +4,7 @@
 ### END LICENSE
 
 import gettext
+import subprocess
 from gettext import gettext as _
 gettext.textdomain('oricus')
 
@@ -27,4 +28,13 @@ class OricusWindow(Window):
         self.PreferencesDialog = PreferencesOricusDialog
 
         # Code for other initialization actions should be added here.
+        try:
+            output = subprocess.check_output(['/usr/sbin/service', 'apache2', 'status']);
+            isError = False
+        except subprocess.CalledProcessError, e:
+            output = e.output
+            isError = True
+        self.builder.get_object('statusToggleSwitch').set_active(not isError)
+        if isError:
+            self.builder.get_object('statusbar1').push(1, output.strip())
 
