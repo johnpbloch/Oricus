@@ -1,0 +1,8 @@
+[Desktop Entry]
+_Name=Oricus
+_Comment=Oricus application
+Categories=GNOME;Utility;
+Exec=oricus
+Icon=oricus
+Terminal=false
+Type=Application
