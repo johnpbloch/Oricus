@@ -28,6 +28,19 @@ class OricusWindow(Window):
         self.PreferencesDialog = PreferencesOricusDialog
 
         # Code for other initialization actions should be added here.
+        find_apache = subprocess.call('/usr/bin/which apache2ctl > /dev/null', shell=True)
+        if find_apache > 0:
+            dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.WARNING,
+                Gtk.ButtonsType.YES_NO, "Apache is not installed. Would you like to intall it?")
+            response = dialog.run()
+            if response == Gtk.ResponseType.NO:
+                import sys
+                sys.exit()
+            worked = subprocess.call(['/usr/bin/gksu', '/usr/bin/apt-get install apache2'])
+            if worked > 0:
+                import sys
+                sys.exit()
+            dialog.destroy()
         try:
             output = subprocess.check_output(['/usr/sbin/service', 'apache2', 'status']);
             isError = False
