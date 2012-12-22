@@ -3,10 +3,10 @@
 # This file is in the public domain
 ### END LICENSE
 
-import gettext
+import locale
 import subprocess
-from gettext import gettext as _
-gettext.textdomain('oricus')
+from locale import gettext as _
+locale.textdomain('oricus')
 
 from gi.repository import Gtk # pylint: disable=E0611
 import logging
