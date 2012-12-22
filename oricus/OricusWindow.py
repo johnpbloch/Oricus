@@ -8,7 +8,7 @@ import subprocess
 from locale import gettext as _
 locale.textdomain('oricus')
 
-from gi.repository import Gtk # pylint: disable=E0611
+from gi.repository import Gtk, GObject # pylint: disable=E0611
 import logging
 logger = logging.getLogger('oricus')
 
@@ -35,6 +35,10 @@ class OricusWindow(Window):
             output = e.output
             isError = True
         self.builder.get_object('statusToggleSwitch').set_active(not isError)
-        if isError:
-            self.builder.get_object('statusbar1').push(1, output.strip())
+        mID = self.builder.get_object('statusbar1').push(1, output.strip())
+        GObject.timeout_add(5000, self.clear_status, 1)
+
+    def clear_status(self, context_id):
+        self.builder.get_object('statusbar1').pop(context_id)
+        return False
 
