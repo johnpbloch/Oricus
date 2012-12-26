@@ -32,7 +32,7 @@ class OricusWindow(Window):
         find_apache = subprocess.call('/usr/bin/which apache2ctl > /dev/null', shell=True)
         if find_apache > 0:
             dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.WARNING,
-                Gtk.ButtonsType.YES_NO, "Apache is not installed. Would you like to intall it?")
+                Gtk.ButtonsType.YES_NO, _("Apache is not installed. Would you like to intall it?"))
             response = dialog.run()
             if response == Gtk.ResponseType.NO:
                 import sys
