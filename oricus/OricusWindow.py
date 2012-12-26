@@ -19,6 +19,7 @@ from oricus.PreferencesOricusDialog import PreferencesOricusDialog
 # See oricus_lib.Window.py for more details about how this class works
 class OricusWindow(Window):
     __gtype_name__ = "OricusWindow"
+    STATUS_TYPE_STARTUP = 24
     
     def finish_initializing(self, builder): # pylint: disable=E1002
         """Set up the main window"""
@@ -48,8 +49,8 @@ class OricusWindow(Window):
             output = e.output
             isError = True
         self.builder.get_object('statusToggleSwitch').set_active(not isError)
-        mID = self.builder.get_object('statusbar1').push(1, output.strip())
-        GObject.timeout_add(5000, self.clear_status, 1)
+        self.builder.get_object('statusbar1').push(self.STATUS_TYPE_STARTUP, output.strip())
+        GObject.timeout_add(5000, self.clear_status, self.STATUS_TYPE_STARTUP)
 
     def clear_status(self, context_id):
         self.builder.get_object('statusbar1').pop(context_id)
