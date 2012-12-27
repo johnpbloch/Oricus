@@ -21,8 +21,6 @@ from oricus.PreferencesOricusDialog import PreferencesOricusDialog
 # See oricus_lib.Window.py for more details about how this class works
 class OricusWindow(Window):
     __gtype_name__ = "OricusWindow"
-    STATUS_TYPE_STARTUP = 24
-    STATUS_TYPE_TOGGLE = 25
     done_setting_up = False
     
     def finish_initializing(self, builder): # pylint: disable=E1002
@@ -43,22 +41,13 @@ class OricusWindow(Window):
             if worked > 0:
                 sys.exit()
             dialog.destroy()
+        
+        self.status = OricusWindowStatusBar(self.builder.get_object('statusbar1'))
+        
         self.builder.get_object('statusToggleSwitch').set_active(Apache.is_running())
-        self.set_status(self.STATUS_TYPE_STARTUP, Apache.get_status())
-        self.clear_status(self.STATUS_TYPE_STARTUP, 5000)
+        self.status.set(Apache.get_status(), StatusTypes.STARTUP)
+        self.status.clear(StatusTypes.STARTUP, 5000)
         self.done_setting_up = True
-
-    def clear_status(self, context_id, Delay=None):
-        if Delay is None:
-            self.builder.get_object('statusbar1').pop(context_id)
-            return False
-        try:
-            GObject.timeout_add(Delay, self.clear_status, context_id)
-        except:
-            pass
-
-    def set_status(self, context, message):
-        self.builder.get_object('statusbar1').push(context, message)
     
     def on_statusToggleSwitch_notify(self, widget, user_data=None):
         if not user_data.name == 'active':
@@ -66,11 +55,37 @@ class OricusWindow(Window):
         if not self.done_setting_up:
             return
         if widget.get_active() and not Apache.is_running():
-            self.set_status(self.STATUS_TYPE_TOGGLE, _("Starting Apache..."));
+            self.status.set(_("Starting Apache..."), StatusTypes.TOGGLE);
             Apache.start()
-            self.clear_status(self.STATUS_TYPE_TOGGLE)
+            self.status.clear(StatusTypes.TOGGLE)
         else:
-            self.set_status(self.STATUS_TYPE_TOGGLE, _("Stopping Apache..."));
+            self.status.set(_("Stopping Apache..."), StatusTypes.TOGGLE);
             Apache.stop()
-            self.clear_status(self.STATUS_TYPE_TOGGLE)
+            self.status.clear(StatusTypes.TOGGLE)
 
+class OricusWindowStatusBar():
+    statusbar = None
+    
+    def __init__(self, statusbar):
+        self.statusbar = statusbar
+        
+    def set(self, message, context=None):
+        if context is None:
+            context = StatusTypes.DEFAULT
+        self.statusbar.push(context, message)
+
+    def clear(self, context=None, Delay=None):
+        if context is None:
+            context = StatusTypes.DEFAULT
+        if Delay is None:
+            self.statusbar.pop(context)
+            return False
+        try:
+            GObject.timeout_add(Delay, self.clear, context)
+        except:
+            pass
+        
+class StatusTypes():
+    (DEFAULT,
+     STARTUP,
+     TOGGLE) = range(1, 4)
