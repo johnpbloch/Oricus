@@ -21,6 +21,7 @@ from oricus.PreferencesOricusDialog import PreferencesOricusDialog
 class OricusWindow(Window):
     __gtype_name__ = "OricusWindow"
     STATUS_TYPE_STARTUP = 24
+    STATUS_TYPE_TOGGLE = 25
     done_setting_up = False
     
     def finish_initializing(self, builder): # pylint: disable=E1002
@@ -63,7 +64,11 @@ class OricusWindow(Window):
         if not self.done_setting_up:
             return
         if widget.get_active() and not Apache.is_running():
+            self.set_status(self.STATUS_TYPE_TOGGLE, _("Starting Apache..."));
             Apache.start()
+            self.clear_status(self.STATUS_TYPE_TOGGLE)
         else:
+            self.set_status(self.STATUS_TYPE_TOGGLE, _("Stopping Apache..."));
             Apache.stop()
+            self.clear_status(self.STATUS_TYPE_TOGGLE)
 
