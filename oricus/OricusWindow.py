@@ -3,6 +3,7 @@
 # This file is in the public domain
 ### END LICENSE
 
+import sys
 import locale
 import subprocess
 from locale import gettext as _
@@ -37,11 +38,9 @@ class OricusWindow(Window):
                 Gtk.ButtonsType.YES_NO, _("Apache is not installed. Would you like to intall it?"))
             response = dialog.run()
             if response == Gtk.ResponseType.NO:
-                import sys
                 sys.exit()
             worked = subprocess.call(['/usr/bin/gksu', '/usr/bin/apt-get install apache2'])
             if worked > 0:
-                import sys
                 sys.exit()
             dialog.destroy()
         self.builder.get_object('statusToggleSwitch').set_active(Apache.is_running())
