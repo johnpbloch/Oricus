@@ -1,6 +1,15 @@
 import subprocess
 import re
+import os
 from oricus_lib.Sudo import sudo
+
+__apache_conf_dir__ = '/etc/apache2'
+
+def get_conf_dir(plus=None):
+    confdir = __apache_conf_dir__
+    if not plus is None:
+        confdir = os.path.join(confdir, plus)
+    return confdir
 
 def is_installed():
     find_apache = subprocess.call('/usr/bin/which apache2ctl > /dev/null', shell=True)
