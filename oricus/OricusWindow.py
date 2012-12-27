@@ -21,6 +21,7 @@ from oricus.PreferencesOricusDialog import PreferencesOricusDialog
 class OricusWindow(Window):
     __gtype_name__ = "OricusWindow"
     STATUS_TYPE_STARTUP = 24
+    done_setting_up = False
     
     def finish_initializing(self, builder): # pylint: disable=E1002
         """Set up the main window"""
@@ -45,6 +46,7 @@ class OricusWindow(Window):
         self.builder.get_object('statusToggleSwitch').set_active(Apache.is_running())
         self.builder.get_object('statusbar1').push(self.STATUS_TYPE_STARTUP, Apache.get_status())
         GObject.timeout_add(5000, self.clear_status, self.STATUS_TYPE_STARTUP)
+        self.done_setting_up = True
 
     def clear_status(self, context_id):
         self.builder.get_object('statusbar1').pop(context_id)
@@ -55,6 +57,8 @@ class OricusWindow(Window):
     
     def on_statusToggleSwitch_notify(self, widget, user_data=None):
         if not user_data.name == 'active':
+            return
+        if not self.done_setting_up:
             return
         if widget.get_active() and not Apache.is_running():
             Apache.start()
