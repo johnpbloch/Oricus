@@ -45,8 +45,8 @@ class OricusWindow(Window):
                 sys.exit()
             dialog.destroy()
         self.builder.get_object('statusToggleSwitch').set_active(Apache.is_running())
-        self.builder.get_object('statusbar1').push(self.STATUS_TYPE_STARTUP, Apache.get_status())
-        GObject.timeout_add(5000, self.clear_status, self.STATUS_TYPE_STARTUP)
+        self.set_status(self.STATUS_TYPE_STARTUP, Apache.get_status())
+        self.clear_status(self.STATUS_TYPE_STARTUP, 5000)
         self.done_setting_up = True
 
     def clear_status(self, context_id, Delay=None):
