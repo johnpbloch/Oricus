@@ -53,7 +53,10 @@ class OricusWindow(Window):
         if Delay is None:
             self.builder.get_object('statusbar1').pop(context_id)
             return False
-        GObject.timeout_add(Delay, self.clear_status, context_id)
+        try:
+            GObject.timeout_add(Delay, self.clear_status, context_id)
+        except:
+            pass
 
     def set_status(self, context, message):
         self.builder.get_object('statusbar1').push(context, message)
