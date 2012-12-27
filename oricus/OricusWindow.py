@@ -15,6 +15,7 @@ logger = logging.getLogger('oricus')
 
 from oricus_lib import Window
 from oricus_lib import Apache
+from oricus_lib.Apache import Vhosts
 from oricus_lib import Status
 from oricus.AboutOricusDialog import AboutOricusDialog
 from oricus.PreferencesOricusDialog import PreferencesOricusDialog
@@ -42,6 +43,8 @@ class OricusWindow(Window):
             if worked > 0:
                 sys.exit()
             dialog.destroy()
+        
+        Vhosts.import_all()
         
         self.status = Status.StatusBar(self.builder.get_object('statusbar1'))
         
