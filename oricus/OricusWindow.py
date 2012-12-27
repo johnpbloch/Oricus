@@ -49,6 +49,9 @@ class OricusWindow(Window):
     def clear_status(self, context_id):
         self.builder.get_object('statusbar1').pop(context_id)
         return False
+
+    def set_status(self, context, message):
+        self.builder.get_object('statusbar1').push(context, message)
     
     def on_statusToggleSwitch_notify(self, widget, user_data=None):
         if not user_data.name == 'active':
