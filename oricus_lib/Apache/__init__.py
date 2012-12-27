@@ -1,5 +1,6 @@
 import subprocess
 import re
+from oricus_lib.Sudo import sudo
 
 def is_installed():
     find_apache = subprocess.call('/usr/bin/which apache2ctl > /dev/null', shell=True)
@@ -16,10 +17,10 @@ def is_running():
     return True if re.search('Apache2 is running \(pid \d+\)', output) else False
 
 def start():
-    subprocess.call(['/usr/bin/gksu', '/usr/sbin/service', 'apache2', 'start'])
+    sudo(['/usr/sbin/service', 'apache2', 'start'], Desc="Start Apache")
 
 def stop():
-    subprocess.call(['/usr/bin/gksu', '/usr/sbin/service', 'apache2', 'stop'])
+    sudo(['/usr/sbin/service', 'apache2', 'stop'], Desc="Stop Apache")
 
 def restart():
-    subprocess.call(['/usr/bin/gksu', '/usr/sbin/service', 'apache2', 'restart'])
+    sudo(['/usr/sbin/service', 'apache2', 'restart'], Desc="Restart Apache")
