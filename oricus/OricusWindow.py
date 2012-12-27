@@ -15,6 +15,7 @@ logger = logging.getLogger('oricus')
 
 from oricus_lib import Window
 from oricus_lib import Apache
+from oricus_lib import Status
 from oricus.AboutOricusDialog import AboutOricusDialog
 from oricus.PreferencesOricusDialog import PreferencesOricusDialog
 
@@ -42,11 +43,11 @@ class OricusWindow(Window):
                 sys.exit()
             dialog.destroy()
         
-        self.status = OricusWindowStatusBar(self.builder.get_object('statusbar1'))
+        self.status = Status.StatusBar(self.builder.get_object('statusbar1'))
         
         self.builder.get_object('statusToggleSwitch').set_active(Apache.is_running())
-        self.status.set(Apache.get_status(), StatusTypes.STARTUP)
-        self.status.clear(StatusTypes.STARTUP, 5000)
+        self.status.set(Apache.get_status(), Status.Types.STARTUP)
+        self.status.clear(Status.Types.STARTUP, 5000)
         self.done_setting_up = True
     
     def on_statusToggleSwitch_notify(self, widget, user_data=None):
@@ -55,37 +56,10 @@ class OricusWindow(Window):
         if not self.done_setting_up:
             return
         if widget.get_active() and not Apache.is_running():
-            self.status.set(_("Starting Apache..."), StatusTypes.TOGGLE);
+            self.status.set(_("Starting Apache..."), Status.Types.TOGGLE);
             Apache.start()
-            self.status.clear(StatusTypes.TOGGLE)
+            self.status.clear(Status.Types.TOGGLE)
         else:
-            self.status.set(_("Stopping Apache..."), StatusTypes.TOGGLE);
+            self.status.set(_("Stopping Apache..."), Status.Types.TOGGLE);
             Apache.stop()
-            self.status.clear(StatusTypes.TOGGLE)
-
-class OricusWindowStatusBar():
-    statusbar = None
-    
-    def __init__(self, statusbar):
-        self.statusbar = statusbar
-        
-    def set(self, message, context=None):
-        if context is None:
-            context = StatusTypes.DEFAULT
-        self.statusbar.push(context, message)
-
-    def clear(self, context=None, Delay=None):
-        if context is None:
-            context = StatusTypes.DEFAULT
-        if Delay is None:
-            self.statusbar.pop(context)
-            return False
-        try:
-            GObject.timeout_add(Delay, self.clear, context)
-        except:
-            pass
-        
-class StatusTypes():
-    (DEFAULT,
-     STARTUP,
-     TOGGLE) = range(1, 4)
+            self.status.clear(Status.Types.TOGGLE)
