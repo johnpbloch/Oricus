@@ -48,9 +48,11 @@ class OricusWindow(Window):
         GObject.timeout_add(5000, self.clear_status, self.STATUS_TYPE_STARTUP)
         self.done_setting_up = True
 
-    def clear_status(self, context_id):
-        self.builder.get_object('statusbar1').pop(context_id)
-        return False
+    def clear_status(self, context_id, Delay=None):
+        if Delay is None:
+            self.builder.get_object('statusbar1').pop(context_id)
+            return False
+        GObject.timeout_add(Delay, self.clear_status, context_id)
 
     def set_status(self, context, message):
         self.builder.get_object('statusbar1').push(context, message)
