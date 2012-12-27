@@ -13,6 +13,7 @@ import logging
 logger = logging.getLogger('oricus')
 
 from oricus_lib import Window
+from oricus_lib import Apache
 from oricus.AboutOricusDialog import AboutOricusDialog
 from oricus.PreferencesOricusDialog import PreferencesOricusDialog
 
@@ -29,8 +30,7 @@ class OricusWindow(Window):
         self.PreferencesDialog = PreferencesOricusDialog
 
         # Code for other initialization actions should be added here.
-        find_apache = subprocess.call('/usr/bin/which apache2ctl > /dev/null', shell=True)
-        if find_apache > 0:
+        if not Apache.is_installed():
             dialog = Gtk.MessageDialog(self, 0, Gtk.MessageType.WARNING,
                 Gtk.ButtonsType.YES_NO, _("Apache is not installed. Would you like to intall it?"))
             response = dialog.run()
@@ -42,14 +42,8 @@ class OricusWindow(Window):
                 import sys
                 sys.exit()
             dialog.destroy()
-        try:
-            output = subprocess.check_output(['/usr/sbin/service', 'apache2', 'status']);
-            isError = False
-        except subprocess.CalledProcessError, e:
-            output = e.output
-            isError = True
-        self.builder.get_object('statusToggleSwitch').set_active(not isError)
-        self.builder.get_object('statusbar1').push(self.STATUS_TYPE_STARTUP, output.strip())
+        self.builder.get_object('statusToggleSwitch').set_active(Apache.is_running())
+        self.builder.get_object('statusbar1').push(self.STATUS_TYPE_STARTUP, Apache.get_status())
         GObject.timeout_add(5000, self.clear_status, self.STATUS_TYPE_STARTUP)
 
     def clear_status(self, context_id):
